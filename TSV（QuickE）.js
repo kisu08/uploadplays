@@ -1,4 +1,5 @@
-function exportTsvFromSheetQE() {
+function exportTsvFromSheetQE() {//テスト用
+
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   
   // 9行目からデータを取得（表示されているデータを取得する）

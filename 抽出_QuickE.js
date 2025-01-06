@@ -2,31 +2,22 @@ function searchDataQE2023() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
 
     // 別のスプレッドシートのIDを指定
-    var externalSpreadsheetId1 = '171cd4G1arGMUmHHkMeZdMj8S8Lo5mTbi4R63PgjspYA';
-    var externalSpreadsheetId2 = '1VeArrE9c8LF7_4v21wk0RAw9fF4KbuRfuVtLKx9FOuY';
+  var externalSpreadsheetId = '171cd4G1arGMUmHHkMeZdMj8S8Lo5mTbi4R63PgjspYA';
   
   // 別のスプレッドシートを開く
-  var externalSpreadsheet1 = SpreadsheetApp.openById(externalSpreadsheetId1);
-  var externalSpreadsheet2 = SpreadsheetApp.openById(externalSpreadsheetId2);
+  var externalSpreadsheet = SpreadsheetApp.openById(externalSpreadsheetId);
   
   // シート名を確認
-  var sheetAName1 = 'E（日経＋QUICK合計）';
-  var sheetAName2 = '入力シート（合計QUICKE）';
+  var sheetAName = 'E（日経＋QUICK合計）';
   var sheetBName = 'Eデータ(QUICK)';
   
-  var sheetA1 = externalSpreadsheet1.getSheetByName(sheetAName1);
-  var sheetA2 = externalSpreadsheet2.getSheetByName(sheetAName2);
+  var sheetA = externalSpreadsheet.getSheetByName(sheetAName);
   var sheetB = ss.getSheetByName(sheetBName);
 
   // シートが正しく取得できているか確認
-  if (!sheetA1) {
-    Logger.log('E（日経＋QUICK合計）が見つかりません: ' + sheetAName1);
-    SpreadsheetApp.getUi().alert('E（日経＋QUICK合計）が見つかりません: ' + sheetAName1);
-    return;
-  }
-  if (!sheetA2) {
-    Logger.log('入力シート（合計QUICKE）が見つかりません: ' + sheetAName2);
-    SpreadsheetApp.getUi().alert('入力シート（合計QUICKE）が見つかりません: ' + sheetAName2);
+  if (!sheetA) {
+    Logger.log('E（日経＋QUICK合計）が見つかりません: ' + sheetAName);
+    SpreadsheetApp.getUi().alert('E（日経＋QUICK合計）が見つかりません: ' + sheetAName);
     return;
   }
   if (!sheetB) {
@@ -55,40 +46,29 @@ function searchDataQE2023() {
   });
 
   // E（日経＋QUICK合計）の範囲を取得
-  var dataA1 = sheetA1.getDataRange().getValues();
+  var dataA = sheetA.getDataRange().getValues();
 
   // E（日経＋QUICK合計）のヘッダー行を取得
-  var headersA1 = sheetA1.getRange(3, 1, 1, sheetA1.getLastColumn()).getValues()[0];
-
-  // 入力シート（合計QUICKE）の範囲を取得
-  var dataA2 = sheetA2.getDataRange().getValues();
-
-  // 入力シート（合計QUICKE）のヘッダー行を取得
-  var headersA2 = sheetA2.getRange(3, 1, 1, sheetA2.getLastColumn()).getValues()[0];
+  var headersA = sheetA.getRange(3, 1, 1, sheetA.getLastColumn()).getValues()[0];
 
   // 銘柄コードの列インデックスを取得
-  var codeColumnIndex1 = headersA1.indexOf('コード');
-  var codeColumnIndex2 = headersA2.indexOf('コード');
-  if (codeColumnIndex1 === -1 || codeColumnIndex2 === -1) {
-    SpreadsheetApp.getUi().alert('コード列が見つかりません。');
+  var codeColumnIndex = headersA.indexOf('コード');
+  if (codeColumnIndex === -1) {
+    SpreadsheetApp.getUi().alert('E（日経＋QUICK合計）に銘柄コード列が見つかりません。');
     return;
   }
-  // E（日経＋QUICK合計）から抽出
-  var matchingRows1 = [];
-  for (var i = 1; i < dataA1.length; i++) {
-    if (codesToSearch.includes(dataA1[i][codeColumnIndex1])) {
-      matchingRows1.push(i);
-    }
-  }
-  // 入力シート（合計QUICKE）から抽出
-  var matchingRows2 = [];
-  for (var i = 1; i < dataA2.length; i++) {
-    if (codesToSearch.includes(dataA2[i][codeColumnIndex2])) {
-      matchingRows2.push(i);
+
+  // マッチした行を保持する配列
+  var matchingRows = [];
+
+  // すべてのコードに対してマッチする行を検索
+  for (var i = 1; i < dataA.length; i++) {
+    if (codesToSearch.includes(dataA[i][codeColumnIndex])) {
+      matchingRows.push(i);  // マッチした行番号を保存
     }
   }
 
-  if (matchingRows1.length == 0 && matchingRows2.length == 0) {
+  if (matchingRows.length == 0) {
     // 該当する銘柄コードが見つからない場合
     SpreadsheetApp.getUi().alert('該当する銘柄コードが見つかりませんでした。');
     return;
@@ -103,66 +83,39 @@ function searchDataQE2023() {
   }
 
   // E（日経＋QUICK合計）の3行目の項目名を取得
-  var headersA4 = sheetA1.getRange(3, 1, 1, sheetA1.getLastColumn()).getValues()[0];
+  var headersA3 = sheetA.getRange(3, 1, 1, sheetA.getLastColumn()).getValues()[0];
   
   // E（日経＋QUICK合計）の2行目の項目名を取得
-  var headersA3 = sheetA1.getRange(2, 1, 1, sheetA1.getLastColumn()).getValues()[0];
+  var headersA2 = sheetA.getRange(2, 1, 1, sheetA.getLastColumn()).getValues()[0];
 
-  //入力シート（合計QUICKE）の3行目の項目名を取得
-  var headersA6 = sheetA2.getRange(3, 1, 1, sheetA2.getLastColumn()).getValues()[0];
-
-  //入力シート（合計QUICKE）の2行目の項目名を取得
-  var headersA5 = sheetA2.getRange(2, 1, 1, sheetA2.getLastColumn()).getValues()[0];
-
-  // 変更箇所: startRowBを最後のデータ行の次に設定
+// 変更箇所: startRowBを最後のデータ行の次に設定
   var lastRowB = sheetB.getLastRow();  // シートの最後の行を取得
   var startRowB = lastRowB + 1;  // 最後の行の次からデータを挿入
-
-  // Eデータ(QUICK)にデータを反映させる開始行
-  for (var r = 0; r < matchingRows1.length; r++) {
-    var rowIndex = matchingRows1[r];
-    var dataToReflect1 = dataA1[rowIndex];
+  
+// マッチした行のデータを反映
+  for (var r = 0; r < matchingRows.length; r++) {
+    var rowIndex = matchingRows[r];
+    var dataToReflect = dataA[rowIndex];
+    Logger.log('マッチしたデータを反映: 行番号 ' + rowIndex);
 
     for (var h = 0; h < headersB.length; h++) {
       if (h < 8) { // H列まで
-        // Eデータ(QUICK)の5行目のJ列までとE（日経＋QUICK合計）3行目の項目名を比較
-        var headerIndexA4 = headersA4.indexOf(headersB[h]);
-        if (headerIndexA4 !== -1) {
-          var cell = sheetB.getRange(startRowB + r, h+1);
-          cell.setNumberFormat('@'); //書式をテキストに設定
-          cell.setValue(dataToReflect1[headerIndexA4]);
-        }
-      } else {
-        // Eデータ(QUICK)の5行目のJ列以降とE（日経＋QUICK合計）2行目の項目名を比較
+        // Eデータ(QUICK)の5行目のH列までとE（日経＋QUICK合計）3行目の項目名を比較
         var headerIndexA3 = headersA3.indexOf(headersB[h]);
         if (headerIndexA3 !== -1) {
-          var cell = sheetB.getRange(startRowB + r,h+1);
+          var cell = sheetB.getRange(startRowB + r, h + 1);
           cell.setNumberFormat('@'); //書式をテキストに設定
-          cell.setValue(dataToReflect1[headerIndexA3]);
-        }
-      }
-    }
-  }
-  // Eデータ(QUICK)にデータを反映させる開始行
-  for (var r = 0; r < matchingRows2.length; r++) {
-    var rowIndex = matchingRows2[r];
-    var dataToReflect2 = dataA2[rowIndex];
-    for (var h = 0; h < headersB.length; h++) {
-      if (h < 8) { // H列まで
-        // Eデータ(QUICK)の5行目のJ列までと入力シート（合計QUICKE）3行目の項目名を比較
-        var headerIndexA6 = headersA6.indexOf(headersB[h]);
-        if (headerIndexA6 !== -1) {
-          var cell = sheetB.getRange(startRowB + r, h+1);
-          cell.setNumberFormat('@'); //書式をテキストに設定
-          cell.setValue(dataToReflect2[headerIndexA6]);
+          cell.setValue(dataToReflect[headerIndexA3]);
+          Logger.log('セル(' + (startRowB + r) + ', ' + (h + 1) + ') にデータを設定: ' + dataToReflect[headerIndexA3]);
         }
       } else {
-        // Eデータ(QUICK)の5行目のJ列以降と入力シート（合計QUICKE）2行目の項目名を比較
-        var headerIndexA5 = headersA5.indexOf(headersB[h]);
-        if (headerIndexA5 !== -1) {
-          var cell = sheetB.getRange(startRowB + r,h+1);
+        // Eデータ(QUICK)の5行目のH列以降とE（日経＋QUICK合計）2行目の項目名を比較
+        var headerIndexA2 = headersA2.indexOf(headersB[h]);
+        if (headerIndexA2 !== -1) {
+          var cell = sheetB.getRange(startRowB + r, h + 1);
           cell.setNumberFormat('@'); //書式をテキストに設定
-          cell.setValue(dataToReflect2[headerIndexA5]);
+          cell.setValue(dataToReflect[headerIndexA2]);
+          Logger.log('セル(' + (startRowB + r) + ', ' + (h + 1) + ') にデータを設定: ' + dataToReflect[headerIndexA2]);
         }
       }
     }

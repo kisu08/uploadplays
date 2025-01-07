@@ -10,9 +10,9 @@ function searchDataSdetail2023() {
   var externalSpreadsheet2 = SpreadsheetApp.openById(externalSpreadsheetId2);
   
   // シート名を確認
-  var sheetAName1 = 'G詳細';
-  var sheetAName2 = '入力シート（詳細G）';
-  var sheetBName = 'Gデータ(詳細)';
+  var sheetAName1 = 'S詳細';
+  var sheetAName2 = '入力シート（詳細S）';
+  var sheetBName = 'Sデータ(詳細)';
 
   var sheetA1 = externalSpreadsheet1.getSheetByName(sheetAName1);
   var sheetA2 = externalSpreadsheet2.getSheetByName(sheetAName2);
@@ -20,18 +20,18 @@ function searchDataSdetail2023() {
 
   // シートが正しく取得できているか確認
   if (!sheetA1) {
-    Logger.log('G詳細が見つかりません: ' + sheetAName1);
-    SpreadsheetApp.getUi().alert('G詳細が見つかりません: ' + sheetAName1);
+    Logger.log('S詳細が見つかりません: ' + sheetAName1);
+    SpreadsheetApp.getUi().alert('S詳細が見つかりません: ' + sheetAName1);
     return;
   }
   if (!sheetA2) {
-    Logger.log('入力シート（詳細G）が見つかりません: ' + sheetAName2);
-    SpreadsheetApp.getUi().alert('入力シート（詳細G）が見つかりません: ' + sheetAName2);
+    Logger.log('入力シート（詳細S）が見つかりません: ' + sheetAName2);
+    SpreadsheetApp.getUi().alert('入力シート（詳細S）が見つかりません: ' + sheetAName2);
     return;
   }
   if (!sheetB) {
-    Logger.log('Gデータ(詳細)が見つかりません: ' + sheetBName);
-    SpreadsheetApp.getUi().alert('Gデータ(詳細)が見つかりません: ' + sheetBName);
+    Logger.log('Sデータ(詳細)が見つかりません: ' + sheetBName);
+    SpreadsheetApp.getUi().alert('Sデータ(詳細)が見つかりません: ' + sheetBName);
     return;
   }
 
@@ -42,7 +42,7 @@ function searchDataSdetail2023() {
     return code !== '';  // 空欄を除外
   });
 
-    // 現在のシート (Gデータ(詳細)) に既に存在する銘柄コードを取得
+    // 現在のシート (Sデータ(詳細)) に既に存在する銘柄コードを取得
   var existingCodes = sheetB.getRange(9, 3, sheetB.getLastRow() - 8, 1).getValues() // 9行目以降のC列
     .flat()
     .filter(function(code) {
@@ -54,16 +54,16 @@ function searchDataSdetail2023() {
     return !existingCodes.includes(code); // 既に存在するコードは除外
   });
 
-  // G詳細の範囲を取得
+  // S詳細の範囲を取得
   var dataA1 = sheetA1.getDataRange().getValues();
 
-  // G詳細のヘッダー行を取得
+  // S詳細のヘッダー行を取得
   var headersA1 = sheetA1.getRange(2, 1, 1, sheetA1.getLastColumn()).getValues()[0];
 
-  // 入力シート（詳細G）の範囲を取得
+  // 入力シート（詳細S）の範囲を取得
   var dataA2 = sheetA2.getDataRange().getValues();
 
-  // 入力シート（詳細G）のヘッダー行を取得
+  // 入力シート（詳細S）のヘッダー行を取得
   var headersA2 = sheetA2.getRange(2, 1, 1, sheetA2.getLastColumn()).getValues()[0];
 
   // 銘柄コードの列インデックスを取得
@@ -74,14 +74,14 @@ function searchDataSdetail2023() {
     return;
   }
 
-  // G詳細から抽出
+  // S詳細から抽出
   var matchingRows1 = [];
   for (var i = 1; i < dataA1.length; i++) {
     if (codesToSearch.includes(dataA1[i][codeColumnIndex1])) {
       matchingRows1.push(i);
     }
   }
-  // 入力シート（詳細G）から抽出
+  // 入力シート（詳細S）から抽出
   var matchingRows2 = [];
   for (var i = 1; i < dataA2.length; i++) {
     if (codesToSearch.includes(dataA2[i][codeColumnIndex2])) {
